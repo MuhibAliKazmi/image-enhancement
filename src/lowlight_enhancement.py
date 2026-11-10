@@ -61,6 +61,10 @@ METHOD_NAMES = (
 # Backends that cannot open a window; used to decide whether to call plt.show().
 NON_INTERACTIVE_BACKENDS = ("agg", "pdf", "ps", "svg", "cairo", "template")
 
+# Branding printed on the comparison figure.
+PROJECT_TITLE = "Low-Light Image Enhancement: Classical Methods Comparison"
+PROJECT_AUTHOR = "Project by Muhib Ali Kazmi"
+
 
 # --------------------------------------------------------------------------- #
 # Input handling
@@ -228,7 +232,15 @@ def print_metrics(stats: dict[str, np.ndarray]) -> None:
 def plot_comparison(images: list[np.ndarray], source_label: str) -> plt.Figure:
     """Figure 1: the original and three enhanced versions, side by side."""
     fig, axes = plt.subplots(2, 2, figsize=(12, 8.5))
-    fig.suptitle(f"Low-Light Enhancement Comparison\n{source_label}", fontsize=13)
+
+    # Title block: report heading, author credit, then the input image details.
+    # Explicit y positions keep the three lines from overlapping.
+    fig.text(0.5, 0.975, PROJECT_TITLE, ha="center", va="top",
+             fontsize=16, fontweight="bold")
+    fig.text(0.5, 0.938, PROJECT_AUTHOR, ha="center", va="top",
+             fontsize=12.5, fontweight="bold", color="0.2")
+    fig.text(0.5, 0.908, source_label, ha="center", va="top",
+             fontsize=9, color="0.35")
 
     for ax, image, title in zip(axes.flat, images, METHOD_NAMES):
         ax.imshow(image, cmap="gray", vmin=0, vmax=255)
@@ -236,7 +248,7 @@ def plot_comparison(images: list[np.ndarray], source_label: str) -> plt.Figure:
                      fontsize=10)
         ax.axis("off")
 
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0, 1, 0.885))
     return fig
 
 
@@ -249,9 +261,19 @@ def plot_histograms(images: list[np.ndarray]) -> plt.Figure:
     """
     colors = ("#444444", "#1f77b4", "#d62728", "#2ca02c")
     fig = plt.figure(figsize=(13, 9))
-    fig.suptitle("Histogram Comparison: Conceptual Shift of Dark Pixels to the Bright Side",
-                 fontsize=13)
-    grid = fig.add_gridspec(2, 4, height_ratios=(1.0, 1.15), hspace=0.35, wspace=0.25)
+
+    # Same title block as the visual comparison, plus a subtitle describing
+    # what this figure demonstrates.
+    fig.text(0.5, 0.975, PROJECT_TITLE, ha="center", va="top",
+             fontsize=16, fontweight="bold")
+    fig.text(0.5, 0.943, PROJECT_AUTHOR, ha="center", va="top",
+             fontsize=12.5, fontweight="bold", color="0.2")
+    fig.text(0.5, 0.916,
+             "Histogram Comparison: Conceptual Shift of Dark Pixels to the Bright Side",
+             ha="center", va="top", fontsize=11, color="0.3")
+
+    grid = fig.add_gridspec(2, 4, height_ratios=(1.0, 1.15), hspace=0.35,
+                            wspace=0.25, top=0.87, bottom=0.07)
 
     # --- Row 1: one histogram per method ----------------------------------- #
     for i, (image, title, color) in enumerate(zip(images, METHOD_NAMES, colors)):
